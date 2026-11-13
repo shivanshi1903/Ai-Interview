@@ -1,0 +1,236 @@
+/* ══════════════════════════════════════════════════════════════════════
+   InterviewIQ AI — Premium Side Panel System
+   Shared by UploadPage & ResultPage. Builds entirely on the token set
+   already defined in appShell.css (--app-*, --grad-*, --accent-*) so the
+   two pages inherit the exact same glass + royal-blue design language.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── Two-column shell ──────────────────────────────────────────────── */
+.split-shell {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(300px, 380px) minmax(0, 1fr);
+  gap: 2.5rem;
+  /* was align-items: start — that let the left column's box shrink to
+     its OWN content height, so once its cards ran out there was nothing
+     left of it but page background while the right column kept going.
+     stretch makes the left grid cell exactly as tall as the taller
+     (right) column, giving the sticky panel below room to ride all the
+     way down instead of stopping early. */
+  align-items: stretch;
+  padding: 3rem 2.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.split-shell.result-shell { grid-template-columns: minmax(300px, 340px) minmax(0, 1fr); }
+.split-main { min-width: 0; display: flex; flex-direction: column; align-items: center; }
+
+/* ── Side panel: stretched cell + bounded sticky inner ──────────────── */
+/* .side-panel-cell is the actual grid item. Thanks to align-items:stretch
+   above, its box is always exactly as tall as the .split-main column next
+   to it — even though its own cards are shorter. That extra height is
+   what gives the sticky panel below somewhere to travel to.
+
+   .side-panel sits inside that cell as position:sticky with NO
+   max-height / overflow-y — so it is never its own scroll container
+   (that was the earlier bug: an internal scrollbar that finished on its
+   own). Instead it simply rides along with the single page scrollbar and
+   is clamped by its own containing block (.side-panel-cell). Concretely:
+   it sticks near the top while you scroll through the short sidebar
+   content, then — once it hits the bottom of the (taller) cell — it stops
+   sticking and its bottom edge lines up with the bottom of the main
+   column. Both sides now visibly finish scrolling at the same point,
+   instead of the left side going blank while the right keeps going. */
+.side-panel-cell {
+  position: relative;
+}
+.side-panel {
+  position: sticky;
+  top: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.side-card {
+  padding: 1.35rem 1.4rem;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.side-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--app-panel-border-glow);
+}
+.side-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  height: 1px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, transparent, var(--grad-violet), var(--grad-cyan), transparent);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* ── Hero brand block ──────────────────────────────────────────────── */
+.side-hero { padding: 0.4rem 0.2rem 0.2rem; }
+.side-hero-tag { margin-top: 0.6rem; font-size: 0.86rem; color: var(--app-text-secondary); font-weight: 600; }
+
+/* ── Headline ──────────────────────────────────────────────────────── */
+.side-headline {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.5rem;
+  line-height: 1.28;
+  letter-spacing: -0.01em;
+  color: var(--app-text-primary);
+  margin: 0.9rem 0 0.6rem;
+}
+.side-sub { font-size: 0.87rem; line-height: 1.6; color: var(--app-text-secondary); }
+
+/* ── Benefit cards ─────────────────────────────────────────────────── */
+.benefit-list { display: flex; flex-direction: column; gap: 0.6rem; }
+.benefit-card {
+  display: flex; align-items: flex-start; gap: 0.75rem;
+  padding: 0.85rem 0.95rem;
+  border-radius: 14px;
+  background: var(--app-panel-bg-soft);
+  border: 1px solid var(--app-panel-border);
+  transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+}
+.benefit-card:hover {
+  transform: translateX(3px);
+  border-color: var(--app-panel-border-glow);
+  background: rgba(124, 108, 255, 0.08);
+}
+.benefit-icon {
+  width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--grad-blue), var(--grad-purple) 60%, var(--grad-cyan));
+  box-shadow: 0 8px 18px rgba(61, 91, 255, 0.3);
+}
+.benefit-title { font-weight: 700; font-size: 0.86rem; color: var(--app-text-primary); margin-bottom: 0.15rem; }
+.benefit-text { font-size: 0.78rem; color: var(--app-text-secondary); line-height: 1.45; }
+
+/* ── Step timeline (Upload page) ──────────────────────────────────── */
+.step-timeline { display: flex; flex-direction: column; }
+.step-item { display: flex; gap: 0.85rem; position: relative; padding-bottom: 1.3rem; }
+.step-item:last-child { padding-bottom: 0; }
+.step-marker {
+  width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 800; font-size: 0.78rem; color: #fff;
+  background: linear-gradient(135deg, var(--grad-blue), var(--grad-purple));
+  box-shadow: 0 6px 16px rgba(61, 91, 255, 0.35);
+  position: relative; z-index: 1;
+}
+.step-item:not(:last-child)::before {
+  content: '';
+  position: absolute; left: 15px; top: 30px; bottom: -2px; width: 1.5px;
+  background: linear-gradient(180deg, rgba(124, 108, 255, 0.5), rgba(69, 232, 223, 0.15));
+}
+.step-title { font-weight: 700; font-size: 0.84rem; color: var(--app-text-primary); margin-bottom: 0.15rem; }
+.step-text { font-size: 0.78rem; color: var(--app-text-secondary); line-height: 1.45; }
+
+/* ── Tip list ──────────────────────────────────────────────────────── */
+.tip-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.tip-item {
+  display: flex; align-items: center; gap: 0.55rem;
+  font-size: 0.82rem; color: var(--app-text-primary);
+  padding: 0.5rem 0.7rem; border-radius: 10px;
+  background: var(--app-panel-bg-soft); border: 1px solid var(--app-panel-border);
+}
+.tip-item .tip-check {
+  width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(47, 208, 138, 0.16); color: var(--accent-success);
+}
+
+/* ── Role grid ─────────────────────────────────────────────────────── */
+.role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.55rem; }
+.role-card {
+  padding: 0.65rem 0.7rem; border-radius: 12px;
+  background: var(--app-panel-bg-soft); border: 1px solid var(--app-panel-border);
+  font-size: 0.74rem; font-weight: 600; color: var(--app-text-secondary);
+  transition: all 0.22s ease; text-align: center;
+}
+.role-card:hover { border-color: var(--grad-cyan); color: var(--app-text-primary); transform: translateY(-2px); }
+
+/* ── Quality indicator badges ─────────────────────────────────────── */
+.quality-grid { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+.quality-badge {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  font-size: 0.72rem; font-weight: 700; padding: 0.35rem 0.7rem; border-radius: 9999px;
+  background: rgba(69, 232, 223, 0.1); color: var(--grad-cyan); border: 1px solid rgba(69, 232, 223, 0.28);
+}
+
+/* ── Growth journey chart (Result page) ───────────────────────────── */
+.growth-chart-wrap { position: relative; }
+.growth-line { fill: none; stroke: url(#growthGradient); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 400; stroke-dashoffset: 400; animation: drawLine 1.6s cubic-bezier(0.16,1,0.3,1) 0.2s forwards; }
+@keyframes drawLine { to { stroke-dashoffset: 0; } }
+.growth-dot { fill: var(--grad-cyan); filter: drop-shadow(0 0 4px rgba(69,232,223,0.8)); }
+.growth-stat {
+  display: flex; align-items: center; gap: 0.4rem; margin-top: 0.7rem;
+  font-size: 0.86rem; font-weight: 700; color: var(--accent-success);
+}
+.growth-labels { display: flex; justify-content: space-between; margin-top: 0.35rem; }
+.growth-labels span { font-size: 0.62rem; color: var(--app-text-muted); font-weight: 600; }
+
+/* ── Company grid (text-based, no logo artwork) ───────────────────── */
+.company-grid { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+.company-chip {
+  padding: 0.4rem 0.85rem; border-radius: 9999px; font-size: 0.76rem; font-weight: 700;
+  background: var(--app-panel-bg-soft); border: 1px solid var(--app-panel-border); color: var(--app-text-secondary);
+  transition: all 0.22s ease;
+}
+.company-chip:hover { border-color: var(--grad-purple); color: var(--app-text-primary); transform: translateY(-2px); background: rgba(124,108,255,0.1); }
+
+/* ── Testimonial ───────────────────────────────────────────────────── */
+.side-testimonial-stars { color: var(--grad-cyan); font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 0.5rem; }
+.side-testimonial-quote { font-size: 0.83rem; line-height: 1.55; color: var(--app-text-primary); font-style: italic; margin-bottom: 0.6rem; }
+.side-testimonial-author { font-size: 0.74rem; color: var(--app-text-muted); font-weight: 700; }
+.side-testimonial-role { font-size: 0.7rem; color: var(--app-text-muted); }
+
+/* ── Privacy card ──────────────────────────────────────────────────── */
+.privacy-card {
+  display: flex; gap: 0.7rem; align-items: flex-start;
+  background: linear-gradient(160deg, rgba(69,232,223,0.06), var(--app-panel-bg));
+  box-shadow: var(--app-shadow-card), 0 0 0 1px rgba(69,232,223,0.06) inset;
+}
+.privacy-icon {
+  width: 32px; height: 32px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(69, 232, 223, 0.12); color: var(--grad-cyan);
+}
+.privacy-title { font-weight: 700; font-size: 0.82rem; color: var(--app-text-primary); margin-bottom: 0.2rem; }
+.privacy-text { font-size: 0.76rem; color: var(--app-text-secondary); line-height: 1.5; }
+
+/* ── Mobile collapsible wrapper ────────────────────────────────────── */
+.side-collapsible { display: none; }
+.side-collapsible summary {
+  cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between;
+  font-family: var(--font-display); font-weight: 700; font-size: 0.9rem; color: var(--app-text-primary);
+  padding: 0.2rem;
+}
+.side-collapsible summary::-webkit-details-marker { display: none; }
+.side-collapsible summary::after {
+  content: '›'; transform: rotate(90deg); transition: transform 0.25s ease; font-size: 1.1rem; color: var(--app-text-muted);
+}
+.side-collapsible[open] summary::after { transform: rotate(-90deg); }
+.side-collapsible-body { padding-top: 0.9rem; display: flex; flex-direction: column; gap: 1.1rem; }
+
+/* ── Responsive ────────────────────────────────────────────────────── */
+@media (max-width: 1080px) {
+  .split-shell { grid-template-columns: minmax(260px, 320px) minmax(0, 1fr); gap: 1.75rem; padding: 2.5rem 1.75rem; }
+  .benefit-text, .step-text { display: none; }
+}
+
+@media (max-width: 860px) {
+  .split-shell { display: flex; flex-direction: column; padding: 1.75rem 1.25rem; }
+  .side-panel-cell, .side-panel { display: none; }
+  .side-collapsible { display: block; margin-bottom: 1.5rem; }
+  .benefit-text, .step-text { display: block; }
+}
